@@ -19,6 +19,8 @@ import { signIn } from "next-auth/react";
 import { error } from "console";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -31,6 +33,8 @@ const FormSchema = z.object({
 export default function SignInForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -40,11 +44,14 @@ export default function SignInForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
     const signInData = await signIn("credentials", {
       email: values.email,
       password: values.password,
       redirect: false,
     });
+
+    setIsLoading(false);
 
     if (signInData?.error) {
       toast({
@@ -95,8 +102,15 @@ export default function SignInForm() {
             )}
           />
         </div>
-        <Button className='w-full mt-4' type='submit'>
-          Sign In
+        <Button className='w-full mt-4' type='submit' disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Please wait
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </form>
       <div className='mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400'>

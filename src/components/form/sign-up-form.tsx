@@ -17,6 +17,8 @@ import Link from "next/link";
 import GoogleSignInButton from "../google-sign-in-button";
 import { useRouter } from "next/navigation";
 import { useToast } from "../ui/use-toast";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z
   .object({
@@ -36,6 +38,7 @@ const FormSchema = z
 export default function SignUpForm() {
   const { toast } = useToast();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -47,6 +50,7 @@ export default function SignUpForm() {
   });
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setIsLoading(true);
     const response = await fetch("/api/user", {
       method: "POST",
       headers: {
@@ -58,6 +62,7 @@ export default function SignUpForm() {
         password: values.password,
       }),
     });
+    setIsLoading(false);
 
     if (response.ok) {
       router.push("/sign-in");
@@ -136,8 +141,15 @@ export default function SignUpForm() {
             )}
           />
         </div>
-        <Button className='w-full mt-4' type='submit'>
-          Sign Up
+        <Button className='w-full mt-4' type='submit' disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Please wait
+            </>
+          ) : (
+            "Sign Up"
+          )}
         </Button>
       </form>
       <div className='mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400'>
