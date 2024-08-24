@@ -1,10 +1,15 @@
 import Link from "next/link";
 import React from "react";
 import { ModeToggle } from "./mode-toggle";
-import { buttonVariants } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Lock } from "lucide-react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { signOut } from "next-auth/react";
+import UserAccountNav from "./user-account-nav";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const session = await getServerSession(authOptions);
   return (
     <div className=' py-2 shadow dark:border-b fixed w-full z-10 top-0'>
       <div className='container flex items-center justify-between'>
@@ -14,9 +19,13 @@ export default function Navbar() {
         </Link>
 
         <div className='flex items-center gap-4'>
-          <Link href='/sign-in' className={buttonVariants()}>
-            Sign In
-          </Link>
+          {session?.user ? (
+            <UserAccountNav />
+          ) : (
+            <Link href='/sign-in' className={buttonVariants()}>
+              Sign In
+            </Link>
+          )}
           <ModeToggle />
         </div>
       </div>

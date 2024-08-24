@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/context/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import Provider from "@/components/provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,12 +21,16 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning={true}>
       <body className={inter.className}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <Navbar />
-          <main className='h-screen flex flex-col justify-center items-center px-4 sm:px-0'>
-            {children}
-          </main>
-        </ThemeProvider>
+        <Provider>
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+            <Navbar />
+            <main className='h-screen flex flex-col justify-center items-center px-4 sm:px-0'>
+              {children}
+            </main>
+
+            <Toaster />
+          </ThemeProvider>
+        </Provider>
       </body>
     </html>
   );

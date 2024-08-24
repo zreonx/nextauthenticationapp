@@ -5,5 +5,12 @@ import React from "react";
 export default async function page() {
   const session = await getServerSession(authOptions);
 
-  return <div>Welcome to admin</div>;
+  if (session?.user) {
+    return (
+      <h2 className='text-2xl'>
+        Admin page - welcome back {session?.user.username}
+      </h2>
+    );
+  }
+  return <h2 className='text-2xl'>Please Login to see this admin page</h2>;
 }
